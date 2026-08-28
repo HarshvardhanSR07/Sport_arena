@@ -4,9 +4,9 @@ import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis,
   CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
-import { Activity, TrendingUp } from 'lucide-react';
+import { Activity, TrendingUp, BarChart3 } from 'lucide-react';
 
-const dayColors = ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
+const dayColors = ['#4f46e5', '#f97316', '#10b981', '#8b5cf6', '#ec4899', '#06b6d4', '#f59e0b'];
 
 const Analytics = () => {
   const [trafficData, setTrafficData] = useState(null);
@@ -37,8 +37,6 @@ const Analytics = () => {
 
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-  // Reshape [{date, hours:[{hour,bookings}]}] into recharts-friendly rows:
-  // [{ hour: 0, '2026-08-22': 1.5, '2026-08-23': 0, ... }, ...]
   const hourlyChartData = trafficData
     ? Array.from({ length: 24 }, (_, hour) => {
         const entry = { hour };
@@ -51,7 +49,19 @@ const Analytics = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold mb-6">Analytics Dashboard</h1>
+      <div className="relative overflow-hidden rounded-3xl shadow-lg p-8 text-white mb-8 bg-gradient-to-br from-primary-700 via-primary-600 to-primary-500">
+        <div className="absolute -top-10 -right-10 w-56 h-56 bg-white/10 rounded-full blur-2xl" />
+        <div className="absolute -bottom-16 -left-10 w-56 h-56 bg-accent-500/20 rounded-full blur-2xl" />
+        <div className="relative flex items-center">
+          <div className="icon-duotone w-14 h-14 bg-white/15 mr-4">
+            <BarChart3 className="h-7 w-7 text-white" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold font-display">Analytics Dashboard</h1>
+            <p className="text-primary-100 mt-1">Traffic patterns and facility usage</p>
+          </div>
+        </div>
+      </div>
 
       <div className="card mb-6">
         <select
@@ -76,14 +86,16 @@ const Analytics = () => {
         <>
           <div className="card mb-6">
             <div className="flex items-center mb-4">
-              <TrendingUp className="h-5 w-5 text-primary-600 mr-2" />
-              <h2 className="text-xl font-semibold">Peak Hours</h2>
+              <div className="icon-duotone w-10 h-10 bg-primary-50 mr-3">
+                <TrendingUp className="h-5 w-5 text-primary-600" />
+              </div>
+              <h2 className="text-xl font-semibold font-display">Peak Hours</h2>
             </div>
             <div className="grid grid-cols-5 gap-3">
               {peakHours.map((peak, idx) => (
-                <div key={idx} className="text-center p-3 bg-primary-50 rounded-lg">
-                  <p className="text-sm text-gray-600">Rank {idx + 1}</p>
-                  <p className="text-2xl font-bold text-primary-700">
+                <div key={idx} className="text-center p-3 bg-primary-50/60 rounded-xl border border-primary-100">
+                  <p className="text-sm text-gray-500">Rank {idx + 1}</p>
+                  <p className="text-2xl font-bold font-display text-primary-700">
                     {peak.hour.toString().padStart(2, '0')}:00
                   </p>
                   <p className="text-xs text-gray-500">{peak.count.toFixed(1)} bookings</p>
@@ -94,19 +106,22 @@ const Analytics = () => {
 
           <div className="card mb-6">
             <div className="flex items-center mb-4">
-              <Activity className="h-5 w-5 text-primary-600 mr-2" />
-              <h2 className="text-xl font-semibold">Weekly Hourly Traffic</h2>
+              <div className="icon-duotone w-10 h-10 bg-primary-50 mr-3">
+                <Activity className="h-5 w-5 text-primary-600" />
+              </div>
+              <h2 className="text-xl font-semibold font-display">Weekly Hourly Traffic</h2>
             </div>
 
             <ResponsiveContainer width="100%" height={350}>
               <LineChart data={hourlyChartData}>
-                <CartesianGrid strokeDasharray="3 3" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f1f4" />
                 <XAxis
                   dataKey="hour"
                   label={{ value: 'Hour of day', position: 'insideBottom', offset: -5 }}
+                  stroke="#9ca3af"
                 />
-                <YAxis label={{ value: 'Bookings', angle: -90, position: 'insideLeft' }} />
-                <Tooltip />
+                <YAxis label={{ value: 'Bookings', angle: -90, position: 'insideLeft' }} stroke="#9ca3af" />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
                 <Legend />
                 {trafficData?.map((day, idx) => {
                   const date = new Date(day.date);
@@ -117,7 +132,7 @@ const Analytics = () => {
                       dataKey={day.date}
                       name={`${dayNames[date.getDay()]} ${date.getDate()}`}
                       stroke={dayColors[idx % dayColors.length]}
-                      strokeWidth={2}
+                      strokeWidth={2.5}
                       dot={false}
                     />
                   );
@@ -127,14 +142,14 @@ const Analytics = () => {
           </div>
 
           <div className="card">
-            <h2 className="text-xl font-semibold mb-4">Sport Popularity (Last 30 Days)</h2>
+            <h2 className="text-xl font-semibold font-display mb-4">Sport Popularity (Last 30 Days)</h2>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={sportPopularity}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="_id" />
-                <YAxis />
-                <Tooltip />
-                <Bar dataKey="count" fill="#3b82f6" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#f1f1f4" />
+                <XAxis dataKey="_id" stroke="#9ca3af" />
+                <YAxis stroke="#9ca3af" />
+                <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid #e5e7eb' }} />
+                <Bar dataKey="count" fill="#4f46e5" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>

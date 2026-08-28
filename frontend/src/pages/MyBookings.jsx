@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import API from '../api/axios';
-import { Calendar, Clock, MapPin, X, Users, AlertCircle } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, AlertCircle } from 'lucide-react';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
 
@@ -31,7 +31,7 @@ const MyBookings = () => {
       const response = await API.post(`/bookings/${bookingId}/cancel`, {
         reason: 'User cancellation'
       });
-      
+
       toast.success(response.data.message);
       fetchBookings();
     } catch (error) {
@@ -49,44 +49,43 @@ const MyBookings = () => {
     }
   };
 
-  const filteredBookings = filter === 'all' 
-    ? bookings 
+  const filteredBookings = filter === 'all'
+    ? bookings
     : bookings.filter(b => {
- if (filter === 'upcoming') return new Date(b.startTime) > new Date() && b.status === 'confirmed';
+        if (filter === 'upcoming') return new Date(b.startTime) > new Date() && b.status === 'confirmed';
         if (filter === 'past') return b.status === 'completed' || b.status === 'cancelled';
         return b.status === filter;
       });
 
   const getStatusColor = (status) => {
     const colors = {
-      confirmed: 'bg-green-100 text-green-800',
-      pending: 'bg-yellow-100 text-yellow-800',
-      cancelled: 'bg-red-100 text-red-800',
-      completed: 'bg-gray-100 text-gray-800',
-      'no-show': 'bg-red-100 text-red-800',
-      released: 'bg-orange-100 text-orange-800'
+      confirmed: 'bg-emerald-50 text-emerald-700',
+      pending: 'bg-amber-50 text-amber-700',
+      cancelled: 'bg-red-50 text-red-700',
+      completed: 'bg-gray-100 text-gray-600',
+      'no-show': 'bg-red-50 text-red-700',
+      released: 'bg-accent-50 text-accent-600'
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'bg-gray-100 text-gray-600';
   };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 className="text-3xl font-bold mb-6">My Bookings</h1>
+      <h1 className="text-3xl font-bold font-display mb-6 text-gray-900">My Bookings</h1>
 
-      {/* Filter Tabs */}
-      <div className="flex space-x-2 mb-6 overflow-x-auto">
+      <div className="flex space-x-2 mb-6 overflow-x-auto pb-1">
         {['all', 'upcoming', 'confirmed', 'completed', 'cancelled'].map((f) => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`px-4 py-2 rounded-lg font-medium capitalize whitespace-nowrap ${
+            className={`px-4 py-2 rounded-xl font-medium capitalize whitespace-nowrap transition-all ${
               filter === f
-                ? 'bg-primary-600 text-white'
-                : 'bg-white text-gray-700 hover:bg-gray-100'
+                ? 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-md shadow-primary-600/20'
+                : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
             }`}
           >
             {f}
- </button>
+          </button>
         ))}
       </div>
 
@@ -96,19 +95,21 @@ const MyBookings = () => {
         </div>
       ) : filteredBookings.length === 0 ? (
         <div className="card text-center py-12">
-          <Calendar className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+          <div className="icon-duotone w-16 h-16 bg-gray-50 mx-auto mb-3">
+            <Calendar className="h-8 w-8 text-gray-300" />
+          </div>
           <p className="text-gray-500">No bookings found</p>
         </div>
       ) : (
         <div className="space-y-4">
           {filteredBookings.map((booking) => (
-            <div key={booking._id} className="card">
+            <div key={booking._id} className="card card-hover">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <h3 className="text-lg font-semibold">{booking.facility?.name}</h3>
-                      <p className="text-sm text-gray-600 capitalize">
+                      <h3 className="text-lg font-semibold font-display text-gray-900">{booking.facility?.name}</h3>
+                      <p className="text-sm text-gray-500 capitalize">
                         {booking.facility?.sport?.replace('-', ' ')}
                       </p>
                     </div>
@@ -117,24 +118,24 @@ const MyBookings = () => {
                     </span>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-gray-600 mt-3">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-gray-500 mt-3">
                     <div className="flex items-center">
-                      <Calendar className="h-4 w-4 mr-2" />
+                      <Calendar className="h-4 w-4 mr-2 text-gray-400" />
                       {format(new Date(booking.startTime), 'MMM dd, yyyy')}
                     </div>
                     <div className="flex items-center">
-                      <Clock className="h-4 w-4 mr-2" />
+                      <Clock className="h-4 w-4 mr-2 text-gray-400" />
                       {format(new Date(booking.startTime), 'HH:mm')} - {format(new Date(booking.endTime), 'HH:mm')}
                     </div>
                     <div className="flex items-center">
-                      <MapPin className="h-4 w-4 mr-2" />
+                      <MapPin className="h-4 w-4 mr-2 text-gray-400" />
                       {booking.facility?.location}
                     </div>
                   </div>
 
                   {booking.waitlist?.length > 0 && (
-                    <div className="mt-3 p-3 bg-blue-50 rounded-lg">
-                      <p className="text-sm font-medium text-blue-900">
+                    <div className="mt-3 p-3 bg-primary-50/60 border border-primary-100 rounded-xl">
+                      <p className="text-sm font-medium text-primary-900">
                         <Users className="h-4 w-4 inline mr-1" />
                         Waitlist: {booking.waitlist.length}/{booking.maxWaitlistSize}
                       </p>
@@ -142,8 +143,8 @@ const MyBookings = () => {
                   )}
 
                   {booking.participants?.length > 0 && (
-                    <div className="mt-3 p-3 bg-green-50 rounded-lg">
-                      <p className="text-sm font-medium text-green-900">
+                    <div className="mt-3 p-3 bg-emerald-50/60 border border-emerald-100 rounded-xl">
+                      <p className="text-sm font-medium text-emerald-900">
                         <Users className="h-4 w-4 inline mr-1" />
                         {booking.participants.length} participant(s)
                       </p>
@@ -151,27 +152,28 @@ const MyBookings = () => {
                   )}
 
                   {booking.weatherCheck?.warning && (
-                    <div className="mt-3 p-3 bg-yellow-50 rounded-lg flex items-start">
-                      <AlertCircle className="h-4 w-4 text-yellow-600 mr-2 mt-0.5" />
-                      <p className="text-sm text-yellow-800">{booking.weatherCheck.warning}</p>
+                    <div className="mt-3 p-3 bg-amber-50/60 border border-amber-100 rounded-xl flex items-start">
+                      <AlertCircle className="h-4 w-4 text-amber-600 mr-2 mt-0.5" />
+                      <p className="text-sm text-amber-800">{booking.weatherCheck.warning}</p>
                     </div>
                   )}
                 </div>
               </div>
 
-<div className="flex space-x-2 mt-4">
+              <div className="flex space-x-2 mt-4">
                 {booking.status === 'confirmed' && new Date(booking.startTime) > new Date() && (
                   <button
                     onClick={() => handleCancel(booking._id)}
-                    className="px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 text-sm font-medium"
+                    className="px-4 py-2 bg-red-50 text-red-700 rounded-xl hover:bg-red-100 text-sm font-medium transition-colors"
                   >
-                    Cancel Booking </button>
+                    Cancel Booking
+                  </button>
                 )}
                 {booking.checkIn?.qrCode && booking.status === 'confirmed' && (
                   <a
                     href={booking.checkIn.qrCode}
                     download={`qr-${booking._id}.png`}
-                    className="px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 text-sm font-medium"
+                    className="px-4 py-2 bg-primary-50 text-primary-700 rounded-xl hover:bg-primary-100 text-sm font-medium transition-colors"
                   >
                     Download QR Code
                   </a>

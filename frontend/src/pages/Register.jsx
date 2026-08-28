@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Trophy } from 'lucide-react';
+import { Trophy, ArrowRight } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Register = () => {
@@ -54,18 +54,23 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
+    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden bg-gray-950">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-gray-950 to-gray-950" />
+      <div className="absolute -top-32 -right-32 w-96 h-96 bg-primary-500/30 rounded-full blur-3xl" />
+      <div className="absolute -bottom-32 -left-32 w-96 h-96 bg-accent-500/20 rounded-full blur-3xl" />
+
+      <div className="relative max-w-md w-full bg-white/95 backdrop-blur rounded-3xl shadow-2xl shadow-black/40 p-8 animate-fade-in-up">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-primary-100 rounded-full mb-4">
-            <Trophy className="h-8 w-8 text-primary-600" />
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-700 rounded-2xl mb-4 shadow-lg shadow-primary-600/30">
+            <Trophy className="h-8 w-8 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
-          <p className="text-gray-600 mt-2">Join IITG Arena Hub</p>
+          <h1 className="text-3xl font-bold font-display text-gray-900">Create Account</h1>
+          <p className="text-gray-500 mt-2">Join IITG Arena Hub</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-3">
-          <input            type="text"
+          <input
+            type="text"
             name="name"
             placeholder="Full Name"
             className="input-field"
@@ -148,15 +153,20 @@ const Register = () => {
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary w-full"
+            className="btn-primary w-full flex items-center justify-center gap-2 group"
           >
-            {loading ? 'Creating account...' : 'Register'}
+            {loading ? 'Creating account...' : (
+              <>
+                Register
+                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              </>
+            )}
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-600 mt-4">
+        <p className="text-center text-sm text-gray-500 mt-4">
           Already have an account?{' '}
-          <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">
+          <Link to="/login" className="text-primary-600 hover:text-primary-700 font-semibold">
             Sign in
           </Link>
         </p>
