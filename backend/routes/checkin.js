@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const Booking = require('../models/Booking');
 const jwt = require('jsonwebtoken');
+const QRService = require('../services/qrService');
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -23,14 +24,32 @@ router.post('/verify', authMiddleware, async (req, res) => {
   try {
     const { qrData } = req.body;
 
-    let parsedQR;
+    if (!qrData) {
+      return res.status(400).json({ message: 'QR code data is required' });
+    }
+
+    // Peek at the token just to learn which booking it claims to be for.
+    // The actual trust decision happens below in QRService.validateToken,
+    // which re-decodes the same token and checks its HMAC signature and expiry —
+    // this peek alone proves nothing on its own.
+    let claimedBookingId;
     try {
-      parsedQR = JSON.parse(qrData);
+      claimedBookingId = JSON.parse(Buffer.from(qrData, 'base64').toString()).bookingId;
     } catch {
       return res.status(400).json({ message: 'Invalid QR code format' });
     }
 
-    const booking = await Booking.findById(parsedQR.bookingId).populate('facility primaryBooker');
+    if (!claimedBookingId) {
+      return res.status(400).json({ message: 'Invalid QR code format' });
+    }
+
+    const verification = QRService.validateToken(qrData, claimedBookingId, req.userId);
+
+    if (!verification.valid) {
+      return res.status(400).json({ message: verification.reason });
+    }
+
+    const booking = await Booking.findById(claimedBookingId).populate('facility primaryBooker');
 
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });

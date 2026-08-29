@@ -5,6 +5,8 @@ const Booking = require('../models/Booking');
 const Facility = require('../models/Facility');
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
+const QRCode = require('qrcode');
+const QRService = require('../services/qrService');
 const WebSocketService = require('../services/websocketService');
 
 const authMiddleware = async (req, res, next) => {
@@ -26,6 +28,7 @@ const authMiddleware = async (req, res, next) => {
 // - blocks suspended users
 // - enforces one booking per user per day
 // - checks for slot conflicts on the same facility
+// - generates a signed, scannable QR code for check-in
 // ---------------------------------------------------------
 router.post('/', authMiddleware, async (req, res) => {
   try {
@@ -109,6 +112,15 @@ router.post('/', authMiddleware, async (req, res) => {
       isPublic: isPublic || false,
       participants
     });
+
+    // Generate the check-in QR code now, while primaryBooker/_id are still
+    // plain ObjectIds (not yet populated into full documents below).
+    // Validity runs through the end of the booking, not a flat 15 minutes
+    // from creation — /api/checkin/verify separately enforces that check-in
+    // itself only opens 15 minutes before the slot starts.
+    const qrToken = QRService.generateCheckInToken(booking._id, req.userId, booking.endTime);
+    booking.checkIn.qrCode = await QRCode.toDataURL(qrToken.token);
+    await booking.save();
 
     await booking.populate('facility primaryBooker participants.user');
 

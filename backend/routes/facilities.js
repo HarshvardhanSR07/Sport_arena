@@ -78,7 +78,7 @@ router.get('/:facilityId/availability', async (req, res) => {
       status: { $in: activeStatuses },
       startTime: { $lt: dayEnd },
       endTime: { $gt: dayStart }
-    }).select('startTime endTime status');
+    }).select('startTime endTime status primaryBooker');
 
     const maintenance = (facility.maintenanceSlots || []).filter(
       (slot) => slot.startTime < dayEnd && slot.endTime > dayStart

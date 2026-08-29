@@ -11,7 +11,7 @@ class WeatherService {
 
   async checkWeatherForBooking(startTime, endTime) {
     try {
-      if (!this.apiKey || this.apiKey === 'your_api_key_here') {
+      if (!this.apiKey || this.apiKey === 'bc4672041aaef72b693b245052b72aad') {
         return {
           checked: false,
           suitable: true,

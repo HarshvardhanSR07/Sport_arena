@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import API from '../api/axios';
-import { Calendar, Clock, AlertTriangle, Trophy, Activity, ArrowRight } from 'lucide-react';
+import { Calendar, Clock, AlertTriangle, Trophy, Activity, ArrowRight, Zap } from 'lucide-react';
 import { format } from 'date-fns';
 
 const StatCard = ({ label, value, icon: Icon, tint }) => (
@@ -77,8 +77,9 @@ const Dashboard = () => {
         <StatCard label="Role" value={<span className="capitalize">{user?.role}</span>} icon={Trophy} tint={{ bg: 'bg-violet-50', text: 'text-violet-600' }} />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <QuickAction to="/facilities" icon={Calendar} title="Book a Facility" description="Browse and book sports facilities" />
+        <QuickAction to="/quick-book" icon={Zap} title="Quick Book" description="See booked slots and grab an open one fast" />
         <QuickAction to="/challenger" icon={Trophy} title="Challenger Mode" description="Find players or post your open slot" />
         <QuickAction to="/analytics" icon={Activity} title="View Analytics" description="See weekly traffic patterns" />
       </div>

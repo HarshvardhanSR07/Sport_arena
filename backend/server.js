@@ -35,14 +35,34 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/facilities', require('./routes/facilities'));
-app.use('/api/bookings', require('./routes/bookings'));
-app.use('/api/users', require('./routes/users'));
-app.use('/api/analytics', require('./routes/analytics'));
-app.use('/api/challenger', require('./routes/challenger'));
-app.use('/api/checkin', require('./routes/checkin'));
-app.use('/api/health', require('./routes/health'));
+// Mount every route module through one loop so a bad export fails loudly
+// with the exact file name instead of Express's generic Router.use() error.
+const routeModules = [
+  ['/api/auth', './routes/auth'],
+  ['/api/facilities', './routes/facilities'],
+  ['/api/bookings', './routes/bookings'],
+  ['/api/users', './routes/users'],
+  ['/api/analytics', './routes/analytics'],
+  ['/api/challenger', './routes/challenger'],
+  ['/api/checkin', './routes/checkin'],
+  ['/api/health', './routes/health'],
+];
+
+for (const [mountPath, modulePath] of routeModules) {
+  const router = require(modulePath);
+
+  if (typeof router !== 'function') {
+    // Most common cause: the route file does `module.exports = { router }`
+    // (or exports some other object) instead of `module.exports = router;`
+    throw new Error(
+      `Route module "${modulePath}" (mounted at "${mountPath}") did not export ` +
+      `an Express router/middleware function — got "${typeof router}" instead. ` +
+      `Open that file and make sure it ends with: module.exports = router;`
+    );
+  }
+
+  app.use(mountPath, router);
+}
 
 app.get('/api/health-check', (req, res) => {
   res.json({
