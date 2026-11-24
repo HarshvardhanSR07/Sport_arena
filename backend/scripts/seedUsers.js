@@ -6,16 +6,16 @@ const User = require('../models/User');
 const demoUsers = [
   {
     name: 'R. Sharma',
-    email: 'r.sharma@iitg.ac.in',
-    password: 'student123',
+    email: 'r.sharma@example.com',
+    password: process.env.SEED_STUDENT_PASSWORD || 'student_demo_pass',
     role: 'student',
     department: 'Computer Science and Engineering',
     rollNumber: '210101001'
   },
   {
     name: 'Admin User',
-    email: 'admin@iitg.ac.in',
-    password: 'admin123',
+    email: 'admin@example.com',
+    password: process.env.SEED_ADMIN_PASSWORD || 'admin_demo_pass',
     role: 'admin',
     department: 'Administration'
   }

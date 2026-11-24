@@ -16,7 +16,7 @@ exports.register = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { name, email, password, role, department, rollNumber, phoneNumber } = req.body;
+    const { name, email, password, department, rollNumber, phoneNumber } = req.body;
 
     // Check if user exists
     const existingUser = await User.findOne({ email });
@@ -24,12 +24,12 @@ exports.register = async (req, res) => {
       return res.status(400).json({ message: 'User already exists with this email' });
     }
 
-    // Create user
+    // Create user (Public registration is strictly restricted to 'student' role)
     const user = await User.create({
       name,
       email,
       password,
-      role: role || 'student',
+      role: 'student',
       department,
       rollNumber,
       phoneNumber
